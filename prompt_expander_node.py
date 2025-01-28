@@ -8,6 +8,8 @@ class PromptExpanderConfig:
     MODEL_NAME = "roborovski/superprompt-v1"
     SYSTEM_PROMPT = "Expand the following prompt to add more detail:"
     DEFAULT_SEED = 1
+    SEED_MODES = ["fixed", "random", "increment"]
+    DEFAULT_SEED_MODE = "fixed"
     
     # Model settings
     DEFAULT_MAX_TOKENS = 512
@@ -21,12 +23,15 @@ class PromptExpanderNode:
         self.model_dir = self.model_home_dir / PromptExpanderConfig.MODEL_NAME
         self.tokenizer = None
         self.model = None
+        self._current_seed = PromptExpanderConfig.DEFAULT_SEED
         
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "prompt": ("STRING", {"default": "Enter prompt here"})
+                "prompt": ("STRING", {"default": "Enter prompt here"}),
+                "seed_mode": (PromptExpanderConfig.SEED_MODES, {"default": PromptExpanderConfig.DEFAULT_SEED_MODE}),
+                "seed": ("INT", {"default": PromptExpanderConfig.DEFAULT_SEED, "min": 0, "max": 0xffffffffffffffff})
             },
         }
 
@@ -78,14 +83,18 @@ class PromptExpanderNode:
             raise RuntimeError(f"Failed to load models: {str(e)}")
 
     def expand_prompt(self, prompt: str, 
-                      max_new_tokens: int = PromptExpanderConfig.DEFAULT_MAX_TOKENS,
+                     seed_mode: str = PromptExpanderConfig.DEFAULT_SEED_MODE,
+                     seed: int = PromptExpanderConfig.DEFAULT_SEED,
+                     max_new_tokens: int = PromptExpanderConfig.DEFAULT_MAX_TOKENS,
                      repetition_penalty: float = PromptExpanderConfig.DEFAULT_REP_PENALTY, 
-                     remove_incomplete_sentences: bool= True) -> tuple:
+                     remove_incomplete_sentences: bool = True) -> tuple:
         """
         Generate expanded text from the input prompt.
         
         Args:
             prompt: Input text to expand
+            seed_mode: Mode for seed generation ('fixed', 'random', or 'increment')
+            seed: Base seed value to use
             max_new_tokens: Maximum number of new tokens to generate
             repetition_penalty: Penalty for repetition in generated text
             remove_incomplete_sentences: Whether to remove incomplete sentences
@@ -96,8 +105,17 @@ class PromptExpanderNode:
         if self.tokenizer is None or self.model is None:
             self._load_models()
 
+        # Handle seed based on mode
+        if seed_mode == "fixed":
+            generation_seed = seed
+        elif seed_mode == "random":
+            generation_seed = torch.randint(0, 0xffffffffffffffff, (1,)).item()
+        else:  # increment
+            generation_seed = self._current_seed
+            self._current_seed += 1
+
         # Set up generation
-        torch.manual_seed(PromptExpanderConfig.DEFAULT_SEED)
+        torch.manual_seed(generation_seed)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
         # Prepare input
@@ -128,4 +146,4 @@ class PromptExpanderNode:
 # For testing
 if __name__ == "__main__":
     m = PromptExpanderNode()
-    print(m.expand_prompt("a beautiful girl", 512, 1.2, True))
+    print(m.expand_prompt("a beautiful girl"))
