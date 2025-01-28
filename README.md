@@ -59,5 +59,6 @@ This node uses the `roborovski/superprompt-v1` model, which will be automaticall
 ## Credits
 
 - Model: roborovski/superprompt-v1
+- https://github.com/NeuralSamurAI/Comfyui-Superprompt-Unofficial
 
  
