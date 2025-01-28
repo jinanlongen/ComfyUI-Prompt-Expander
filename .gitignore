@@ -18,3 +18,5 @@ env/
 # IDE
 .vscode/
 .idea/ 
+
+.notebooks/**
