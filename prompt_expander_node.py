@@ -26,19 +26,7 @@ class PromptExpanderNode:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "prompt": ("STRING", {"default": "Enter prompt here"}),
-                "max_new_tokens": ("INT", {
-                    "default": PromptExpanderConfig.DEFAULT_MAX_TOKENS,
-                    "min": 1,
-                    "max": 2048
-                }),
-                "repetition_penalty": ("FLOAT", {
-                    "default": PromptExpanderConfig.DEFAULT_REP_PENALTY,
-                    "min": 0.0,
-                    "max": 2.0,
-                    "step": 0.1
-                }),
-                "remove_incomplete_sentences": ("BOOLEAN", {"default": True}),
+                "prompt": ("STRING", {"default": "Enter prompt here"})
             },
         }
 
@@ -68,7 +56,7 @@ class PromptExpanderNode:
             self.tokenizer.save_pretrained(self.model_dir)
             self.model.save_pretrained(self.model_dir)
             
-            print(f"Downloaded SuperPrompt-v1 model files to {self.model_dir}")
+            print(f"Downloaded {PromptExpanderConfig.MODEL_NAME} model files to {self.model_dir}")
         except Exception as e:
             raise RuntimeError(f"Failed to download models: {str(e)}")
 
@@ -89,8 +77,10 @@ class PromptExpanderNode:
         except Exception as e:
             raise RuntimeError(f"Failed to load models: {str(e)}")
 
-    def expand_prompt(self, prompt: str, max_new_tokens: int,
-                     repetition_penalty: float, remove_incomplete_sentences: bool) -> tuple:
+    def expand_prompt(self, prompt: str, 
+                      max_new_tokens: int = PromptExpanderConfig.DEFAULT_MAX_TOKENS,
+                     repetition_penalty: float = PromptExpanderConfig.DEFAULT_REP_PENALTY, 
+                     remove_incomplete_sentences: bool= True) -> tuple:
         """
         Generate expanded text from the input prompt.
         
