@@ -10,6 +10,8 @@ A custom node for ComfyUI that expands text prompts using the SuperPrompt-v1 T5 
 - GPU acceleration support (when available)
 - Automatic model downloading and caching
 
+<img width="1168" alt="image" src="https://github.com/user-attachments/assets/228237f3-d24b-4aa1-9fd8-1be436d524a5" />
+
 ## Requirements
 
 - Python 3.x
