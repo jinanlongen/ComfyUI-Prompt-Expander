@@ -38,7 +38,7 @@ class PromptExpanderNode:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("expanded_prompt",)
     FUNCTION = "expand_prompt"
-    CATEGORY = "text"
+    CATEGORY = "Prompt"
 
     @staticmethod
     def remove_incomplete_sentence(paragraph: str) -> str:
