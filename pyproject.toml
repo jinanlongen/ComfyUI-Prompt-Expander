@@ -1,0 +1,15 @@
+[project]
+name = "prompt-expander"
+description = "A custom node for ComfyUI that expands text prompts using the SuperPrompt-v1 T5 model. This node helps generate more detailed and descriptive prompts from simple input text, which can be particularly useful for image generation workflows."
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["transformers>=4.30.0", "torch>=2.0.0"]
+
+[project.urls]
+Repository = "https://github.com/jinanlongen/ComfyUI-Prompt-Expander"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-Prompt-Expander"
+Icon = ""
